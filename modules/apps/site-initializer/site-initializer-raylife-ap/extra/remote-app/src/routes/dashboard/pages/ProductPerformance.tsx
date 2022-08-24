@@ -72,36 +72,65 @@ type BarChartPerformanceTypes = {
 	width: number,
 }
 
-const dataColumn: any = {
 
+
+const dataColumn: any = {
+	
+	three: {
+	
+		1:{
+			achieved: 300,
+			exceeded: 0,
+			goals: 100,
+			},
+		2:
+		{
+			achieved: 350,
+			exceeded: 0,
+			goals: 200,
+				},
+		3:
+		{
+			achieved: 400,
+			exceeded: 0,
+			goals: 200,
+			
+		},
+	},
 	yearly: {
 	
-	1:{
+	0:{
+		achieved: 300,
+		exceeded: 0,
+		goals: 100,
+		},
+	1:
+	{
 		achieved: 350,
 		exceeded: 0,
 		goals: 200,
 			},
 	2:
 	{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
-			},
-	3:
-	{
-		achieved: 30,
+		achieved: 400,
 		exceeded: 0,
 		goals: 200,
 		
 	},
-	4:{
+	3:{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
 			},
-	5:{
-		achieved: 30,
+	4:{
+		achieved: 300,
 		exceeded: 300,
+		goals: 40,
+			},
+	5:
+	{
+		achieved: 30,
+		exceeded: 0,
 		goals: 200,
 			},
 	6:
@@ -110,51 +139,44 @@ const dataColumn: any = {
 		exceeded: 0,
 		goals: 200,
 			},
-	7:
-	{
+	7:{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
 			},
-	8:{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
-			},
-	9:{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
-			},
-	10:
-	{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
+
+	// 8:{
+	// 	achieved: 30,
+	// 	exceeded: 0,
+	// 	goals: 200,
+	// 		},
+	// 9:
+	// {
+	// 	achieved: 30,
+	// 	exceeded: 0,
+	// 	goals: 200,
 		
-	},
-	11:
-	{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
+	// },
+	// 10:
+	// {
+	// 	achieved: 30,
+	// 	exceeded: 0,
+	// 	goals: 200,
 		
-	},
-	12:
-	{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
-			},
-		
+	// },
+	// 11:
+	// {
+	// 	achieved: 30,
+	// 	exceeded: 0,
+	// 	goals: 200,
+	// },
+	
 	
 	},
+
+
 	
 }
-
-const achieved = Object.values(dataColumn.yearly).map((item: any) => item.achieved)
-const goals = Object.values(dataColumn.yearly).map((item: any) =>   item.goals - item.achieved)
-const exceeded = Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? (item.achieved - item.goals)  : 0)
 
 const colors: {[keys:string]:{}} = {
 	achieved: '#55C2FF',
@@ -162,26 +184,27 @@ const colors: {[keys:string]:{}} = {
 	goals:'#DCF1FD'
 }
 
-const aGroup =   achieved[0] > goals[0] ? ['achieved', 'exceeded']: ['achieved', 'goals']
+const achieved = Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? item.goals: item.achieved)
 
-const aColumns = achieved[0] > goals[0] ? [
-											["achieved", ...achieved ],
-											["exceeded", ...exceeded ]] : 
-											[
-												["achieved",  ...achieved],
-												["goals", ...goals ],
-											]
-											
+const exceeded = Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? item.achieved - item.goals : NaN)
+
+const goals = Object.values(dataColumn.yearly).map((item:any) => item.goals < 0 || item.goals < item.achieved ? NaN : item.goals)
+
+
 const dataChart: any = {
 
 	data:{
 
 		columns: 
 			
-			aColumns
+		[
+			['achieved', ...achieved],
+			['exceeded', ...exceeded],
+			['goals', ...goals]
+		]
 		,
 		groups: [
-			aGroup
+			['achieved','exceeded'], [ 'achieved', 'goals',]
 		],
 
 		
@@ -315,17 +338,16 @@ const ProductPerformance = () => {
 						height: 50,
 						position:{x: 30},
 						show: true,
-						type: 'category',						
-					
-						
-
+						type: 'category',
+						width:100,
+										
 					},
 					y: {
 						fixed: true,
 						show: true,
 						tick: {
 							format(x:any) {return '$' + x},
-							stepSize: 100,
+							stepSize: 50,
 							}
 					},
 				}}
@@ -341,7 +363,7 @@ const ProductPerformance = () => {
 					colors,
 					columns:dataChart.data.columns,
                     groups: dataChart.data.groups,					
-					order: { function ( )  {Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? 'asc' : 'desc ')}},
+					order: { function ()  {Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? 'asc' : 'desc ')}},
 					type: 'bar',
 				}}
 
