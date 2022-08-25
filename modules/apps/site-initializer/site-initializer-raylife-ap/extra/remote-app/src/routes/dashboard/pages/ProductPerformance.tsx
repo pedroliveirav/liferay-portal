@@ -57,7 +57,28 @@ const PRODUCT_SALES_GOAL = [
 	},
 ];
 
-const TIME_PERIODS = ['YTD', '3 MO', '6 MO'];
+const PERIOD = {
+	SIX_MONTH: '2',
+	THREE_MONTH: '1',
+	YTD: '3',
+};
+
+
+const TIME_PERIODS = [
+	{
+		label: '3 MO',
+		value: PERIOD.THREE_MONTH,
+	},
+	{
+		label: '6 MO',
+		value: PERIOD.SIX_MONTH,
+	},
+	{
+		label: 'YTD',
+		value: PERIOD.YTD,
+	},
+];
+
 
 type BarChartPerformanceTypes = {
     colors: string[],
@@ -72,137 +93,149 @@ type BarChartPerformanceTypes = {
 	width: number,
 }
 
-const dataColumn: any = {
 
+const dataColumn: any = {
+	
+	three: {
+	
+		1:{
+			achieved: 300,
+			exceeded: 0,
+			goals: 100,
+			},
+		2:
+		{
+			achieved: 350,
+			exceeded: 0,
+			goals: 200,
+				},
+		3:
+		{
+			achieved: 400,
+			exceeded: 0,
+			goals: 200,
+			
+		},
+	},
 	yearly: {
 	
-	1:{
+	0:{
+		achieved: 300,
+		exceeded: 0,
+		goals: 100,
+		index: 0,
+		label: 'Jan 2022'
+		},
+	1:
+	{
 		achieved: 350,
 		exceeded: 0,
 		goals: 200,
-			},
+		index: 1,
+		label:'Feb 2022'
+	},
 	2:
 	{
+		achieved: 400,
+		exceeded: 0,
+		goals: 200,
+		index: 2,
+		label:'Mar 2022'	
+
+	},
+	3:{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
-			},
-	3:
+		index: 3,
+		label:'Apr 2022'
+	},
+	4:{
+		achieved: 300,
+		exceeded: 300,
+		goals: 40,
+		index:4,
+		label:'May 2022'
+	},
+	5:
 	{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
-		
+		index: 5,
+		label:'Jun 2022'
 	},
-	4:{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
-			},
-	5:{
-		achieved: 30,
-		exceeded: 300,
-		goals: 200,
-			},
 	6:
 	{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
-			},
-	7:
-	{
+		index: 6,
+		label:'Jul 2022'
+	},
+	7:{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
-			},
+		index: 7,
+		label:'Ago 2022'
+	},
+
 	8:{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
-			},
-	9:{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
-			},
-	10:
+		index: 8,
+
+		label:'Sep 2022'
+	},
+	9:
 	{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
-		
+		index: 9,
+		label: 'Oct 2022'
+	},
+	10:{
+		achieved: 30,
+		exceeded: 0,
+		goals: 200,
+		index :10,
+		label:'Nov 2022'
 	},
 	11:
 	{
 		achieved: 30,
 		exceeded: 0,
 		goals: 200,
-		
-	},
-	12:
-	{
-		achieved: 30,
-		exceeded: 0,
-		goals: 200,
-			},
-		
-	
-	},
-	
-}
+		index: 11,
+		label:'Dec 2022'
 
-const achieved = Object.values(dataColumn.yearly).map((item: any) => item.achieved)
-const goals = Object.values(dataColumn.yearly).map((item: any) =>   item.goals - item.achieved)
-const exceeded = Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? (item.achieved - item.goals)  : 0)
+	},		
+}
+}
 
 const colors: {[keys:string]:{}} = {
 	achieved: '#55C2FF',
 	exceeded: '#FFD76E',
 	goals:'#DCF1FD'
 }
+const date = new Date();
+const actualMonth = date.getMonth();
 
-const aGroup =   achieved[0] > goals[0] ? ['achieved', 'exceeded']: ['achieved', 'goals']
+const yearly = Object.values(dataColumn.yearly).filter((month: any) => month.index <= actualMonth)
 
-const aColumns = achieved[0] > goals[0] ? [
-											["achieved", ...achieved ],
-											["exceeded", ...exceeded ]] : 
-											[
-												["achieved",  ...achieved],
-												["goals", ...goals ],
-											]
-											
-const dataChart: any = {
+const three = Object.values(dataColumn.yearly).filter((month: any) => month.index === actualMonth )
 
-	data:{
+const six = Object.values(dataColumn.yearly).filter((month: any) => month.index <= 6)
 
-		columns: 
-			
-			aColumns
-		,
-		groups: [
-			aGroup
-		],
 
-		
-	}
-}
+const labelColumns = Object.values(dataColumn.yearly).map((label: any) => label.label);
 
-const labelColumns = [
-	'Jan 2022',
-	'Feb 2022',
-	'Mar 2022',
-	'Apr 2022',
-	'May 2022',
-	'Jun 2022',
-	'Jul 2022',
-	'Ago 2022',
-	'Sep 2022',
-	'Oct 2022',
-	'Nov 2022',
-	'Dec 2022',
-];
 
+// eslint-disable-next-line no-console
+console.log()
 
 const BarChartPerformancee: BarChartPerformanceTypes  = {
     colors:[],
@@ -218,13 +251,61 @@ const BarChartPerformancee: BarChartPerformanceTypes  = {
 }
 
 
+
 const ProductPerformance = () => {
 	const [products, setProducts] = useState<ProductCell[]>([]);
-	const [timePeriod, setTimePeriod] = useState(TIME_PERIODS[0]);
+	const [timePeriod, setTimePeriod] = useState('1');
+	const [filt, setFilt] = useState<any>(yearly);
+
+
+	const achieved = filt.map((item: any) =>  item.achieved > item.goals ? item.goals: item.achieved)
+
+	const exceeded = filt.map((item: any) => item.achieved > item.goals ? item.achieved - item.goals : NaN)
+
+	const goals = filt.map((item:any) => item.goals < 0 || item.goals < item.achieved ? NaN : item.goals)
+
+	const dataChart: any = {
+
+		data:{
+	
+			columns: 
+				
+			[
+				['achieved', ...achieved],
+				['exceeded', ...exceeded],
+				['goals', ...goals]
+			]
+			,
+			groups: [
+				['achieved','exceeded'], [ 'achieved', 'goals',]
+			],
+	
+			
+		}
+	}
 
 	useEffect(() => {
 		setProducts(PRODUCT_SALES_GOAL);
-	}, []);
+		
+		if(timePeriod === PERIOD.SIX_MONTH){
+
+			setFilt(six)
+			
+		}
+
+		if(timePeriod === PERIOD.THREE_MONTH){
+
+			setFilt(three)
+
+		}
+
+		if(timePeriod === PERIOD.YTD){
+
+			setFilt(yearly)
+
+		}
+
+	}, [timePeriod]);
 
 	const isFilterAllActive = (product: ProductCell) => !product.active;
 	const findActiveProduct = products.find((product) => product.active)
@@ -286,7 +367,7 @@ const ProductPerformance = () => {
 							</>
 						)}
 					</p>
-
+					
 					<ClaySelect
 						className="product-performance-select"
 						onChange={({target}) => {
@@ -298,8 +379,8 @@ const ProductPerformance = () => {
 						{TIME_PERIODS.map((timePeriod, index) => (
 							<ClaySelect.Option
 								key={index}
-								label={timePeriod}
-								value={timePeriod}
+								label={timePeriod.label}
+								value={timePeriod.value}
 							/>
 						))}
 					</ClaySelect>
@@ -311,21 +392,20 @@ const ProductPerformance = () => {
 					
 				axis={{
 					x: {
-						categories: [...labelColumns],
+						categories: labelColumns,
 						height: 50,
 						position:{x: 30},
 						show: true,
-						type: 'category',						
-					
-						
-
+						type: 'category',
+						width:100,
+										
 					},
 					y: {
 						fixed: true,
 						show: true,
 						tick: {
 							format(x:any) {return '$' + x},
-							stepSize: 100,
+							stepSize: 50,
 							}
 					},
 				}}
@@ -333,15 +413,13 @@ const ProductPerformance = () => {
 					radius: {
 						ratio: 0.2,
 					},
-					width: {
-						data: 20,
-					},
+					width: 25,
 				}}
 				data={{
 					colors,
 					columns:dataChart.data.columns,
                     groups: dataChart.data.groups,					
-					order: { function ( )  {Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? 'asc' : 'desc ')}},
+					order: { function ()  {Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? 'asc' : 'desc ')}},
 					type: 'bar',
 				}}
 
