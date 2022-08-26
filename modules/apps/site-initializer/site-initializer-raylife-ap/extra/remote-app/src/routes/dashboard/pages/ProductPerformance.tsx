@@ -67,15 +67,25 @@ const PERIOD = {
 const TIME_PERIODS = [
 	{
 		label: '3 MO',
+		padding: 30,
 		value: PERIOD.THREE_MONTH,
+		width: 20,
+
 	},
 	{
 		label: '6 MO',
+		padding: 100,
 		value: PERIOD.SIX_MONTH,
+		width: 50,
+
+
 	},
 	{
 		label: 'YTD',
+		padding: 130,
 		value: PERIOD.YTD,
+		width: 120,
+
 	},
 ];
 
@@ -94,9 +104,8 @@ type BarChartPerformanceTypes = {
 }
 
 
-const dataColumn: any = {
-	
 
+const dataColumn: any = {
 	
 	yearly: {
 	
@@ -212,11 +221,11 @@ const three = Object.values(dataColumn.yearly).filter((month: any) => month.inde
 const six = Object.values(dataColumn.yearly).filter((month: any) => month.index < (actualMonth + 1) && month.index > (actualMonth -6))
 
 
-const labelColumnsY = Object.values(dataColumn.yearly).filter((label: any) =>  label.index <= actualMonth).map((label:any) => label.label);
+const labelFilterYearly = Object.values(dataColumn.yearly).filter((label: any) =>  label.index <= actualMonth).map((label:any) => label.label);
 
-const labelColumnsT = Object.values(dataColumn.yearly).filter((label: any) => label.index < (actualMonth + 1) && label.index > (actualMonth -3)).map((label:any) => label.label);
+const labelFilterThree = Object.values(dataColumn.yearly).filter((label: any) => label.index < (actualMonth + 1) && label.index > (actualMonth -3)).map((label:any) => label.label);
 
-const labelColumnsS = Object.values(dataColumn.yearly).filter((label: any) => label.index < (actualMonth + 1) && label.index > (actualMonth -6)).map((label:any) => label.label);
+const labelFilterSix = Object.values(dataColumn.yearly).filter((label: any) => label.index < (actualMonth + 1) && label.index > (actualMonth -6)).map((label:any) => label.label);
 
 // eslint-disable-next-line no-console
 
@@ -237,11 +246,15 @@ const BarChartPerformancee: BarChartPerformanceTypes  = {
 
 const ProductPerformance = () => {
 	const [products, setProducts] = useState<ProductCell[]>([]);
-	const [timePeriod, setTimePeriod] = useState('1');
+	const [timePeriod, setTimePeriod] = useState(PERIOD.THREE_MONTH);
 	const [filt, setFilt] = useState<any>(yearly);
-	const [labe, setlabe] = useState<any>(labelColumnsS);
+	const [labe] = useState<any>();
+	const [width, setWidht] = useState<any>();
+	const [_pad, setPad] = useState<any>();
+
 	const labelRef = useRef<any>();
 
+	
 
 	const achieved = filt.map((item: any) =>  item.achieved > item.goals ? item.goals: item.achieved)
 
@@ -269,36 +282,56 @@ const ProductPerformance = () => {
 		}
 	}
 
+	let paddingValue = 100;
+
+	// const period = {
+	// 	currentMonth: {
+	// 		padding: 300,
+	// 		label: 
+
+	// 	}
+	// }
+
+
+
 	useEffect(() => {
 		setProducts(PRODUCT_SALES_GOAL);
 		
+	// eslint-disable-next-line no-console
+	console.log(labelRef.current)
+
 		if(timePeriod === PERIOD.SIX_MONTH){
 
 			setFilt(six)
-			setlabe(labelColumnsS)
-
-				const titleElement = labelRef.current.element.querySelector(
-					'.bb-axis-x'
-				);
-	
-				titleElement.textContent = 'gato';
-			}
-		
+			setWidht(50)
+			setPad(100)
+			
+			labelRef.current.categories(labelFilterSix)
+			labelRef.current.padding = {right: 300 }
+		}
 		if(timePeriod === PERIOD.THREE_MONTH){
 
 			setFilt(three)
-			setlabe(labelColumnsT)
+			setWidht(20)
+			setPad(30)
+			paddingValue = 30;
+			labelRef.current.categories(labelFilterThree)
+
 		}
 
 		if(timePeriod === PERIOD.YTD){
-
+			
+			setPad(130)
+			setWidht(20)
 			setFilt(yearly)
-			setlabe(labelColumnsY)
+			paddingValue = 130;
 
+			labelRef.current.categories(labelFilterYearly)
 
+			
 		}
 
-	}, [timePeriod , labe]);
+	}, [timePeriod]);
 
 	const isFilterAllActive = (product: ProductCell) => !product.active;
 	const findActiveProduct = products.find((product) => product.active)
@@ -378,34 +411,60 @@ const ProductPerformance = () => {
 						))}
 					</ClaySelect>
 				</div>
+				
+				<div className="overflow-auto px-2 py-5" style={{width: '500'}} > 
 
-				<div className="overflow-auto p-5" > 
-
-					<ClayChart
+				<ClayChart
 						axis={{
 							x: {
-								categories: labelRef,
-								height: 50,
+								categories: labe,
+								height: 85,
+								label: {
+									position:"outer-center",
+									text: "Period (Month)",
+									},	
+								padding: {
+									left: 0,
+									right:0.5,
+
+								
+								},		
 								position:{x: 30},
 								show: true,
 								type: 'category',
 								width:100,
-												
+
+								
 							},
 							y: {
 								fixed: true,
+								height: 80,
+								label: {
+									position: "outer-middle",
+									text: "Dollar ($)",
+									},		
+									padding: {
+									left: 20,
+									right: 20,
+									
+								
+								},	
 								show: true,
 								tick: {
 									format(x:any) {return '$' + x},
 									stepSize: 50,
-									}
+									},
+								width:100,
+
 							},
 						}}
 						bar={{
+							margin: 22,
 							radius: {
-								ratio: 0.2,
+								ratio: 0.9,
 							},
-							width: 25,
+							width,
+							
 						}}
 						data={{
 							colors,
@@ -413,23 +472,40 @@ const ProductPerformance = () => {
 							groups: dataChart.data.groups,					
 							order: { function ()  {Object.values(dataColumn.yearly).map((item: any) => item.achieved > item.goals ? 'asc' : 'desc ')}},
 							type: 'bar',
+							
 						}}
 
 						grid={{
 							x: {
 								show: true,
-								}
+								},
+								y: {
+									show: true,
+									}
 							}}
+							
 						
 						legend={{
+							inset: {
+								anchor: "botton-right" , // top-left, top-right, bottom-left, bottom-right
+								step: 1,
+								x: 35,
+								y: 0,
+								
+							},
 							item: {
 								onclick: () => {return false},
 								onout: () =>  {return false},
 								onover: () =>  {return false},
 							},
+
+							position: "inset",  // bottom, right, inset
 							show: false,
 						}}
-
+						padding = {{
+							right: paddingValue,
+						
+						}}
 						ref={labelRef}
 
 						size={{
