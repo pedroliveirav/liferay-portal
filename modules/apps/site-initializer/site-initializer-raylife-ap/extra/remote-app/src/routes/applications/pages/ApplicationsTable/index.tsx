@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -67,6 +68,9 @@ const HEADERS = [
 const STATUS_DISABLED = ['Bound', 'Quoted'];
 
 const PARAMETERS = {
+	active: "0",
+	page: "0",
+	pageSize:"0",
 	sort: 'applicationCreateDate:desc',
 };
 
@@ -88,7 +92,15 @@ const ApplicationsTable = () => {
 	const [totalCount, setTotalCount] = useState<number>(0);
 	const [pageSize, setPageSize] = useState<number>(5);
 	const [totalPages, setTotalPages] = useState<number>(0);
-	const [active, setActive] = useState(1);
+	const [active, setActive] = useState<number>(1);
+	const [page, setPage] = useState<number>(1);
+	
+	// const [delta, setDelta] = useState<number>(5);
+	
+	PARAMETERS.active = active.toString();
+	PARAMETERS.pageSize = pageSize.toString();
+	PARAMETERS.page = page.toString();
+
 
 	const handleDeleteApplication = (externalReferenceCode: string) => {
 		deleteApplicationByExternalReferenceCode(externalReferenceCode);
@@ -114,6 +126,8 @@ const ApplicationsTable = () => {
 	};
 
 	useEffect(() => {
+
+
 		getApplications(PARAMETERS).then((results) => {
 			const applicationsList: TableContent[] = [];
 			results?.data?.items.forEach(
@@ -149,10 +163,35 @@ const ApplicationsTable = () => {
 
 			const totalPages = Math.ceil(totalCount / pageSize);
 			setTotalPages(totalPages);
+
+			
 		});
-	}, [pageSize]);
+
+	}, [active, pageSize, page]);
 
 	const title = `Applications (${totalCount})`;
+
+
+	// const deltas: any = [
+	// 	{
+	// 		href: '#1',
+	// 		label: 1,
+	// 	},
+	// 	{
+			
+	// 		label: 2,
+	// 	},
+	// 	{
+	// 		href: '#3',
+	// 		label: 3,
+	// 	},
+	// 	{
+			
+	// 		label: 4,
+	// 	},
+	// ]
+
+	// console.log("Page", pageSize, "Active", active);
 
 	return (
 		<div className="px-3 ray-dashboard-recent-applications">
@@ -182,62 +221,80 @@ const ApplicationsTable = () => {
 								label: '5',
 								onClick: () => {
 									setPageSize(5);
+									setActive(1);
 								},
 							},
 							{
 								label: '10',
 								onClick: () => {
 									setPageSize(10);
+									setActive(1);
 								},
 							},
 							{
 								label: '20',
 								onClick: () => {
 									setPageSize(20);
+									setActive(1);
 								},
 							},
-							{
+							{	
 								label: '30',
 								onClick: () => {
 									setPageSize(30);
+									setActive(1);
 								},
 							},
 							{
+								href: "#3",
 								label: '50',
 								onClick: () => {
 									setPageSize(50);
+									setActive(1);
 								},
 							},
 							{
 								label: '75',
 								onClick: () => {
 									setPageSize(75);
+									setActive(1);
 								},
 							},
 						]}
+
 						trigger={
 							<ClayButton displayType="unstyled">
-								{pageSize}
-								Entries
+								{pageSize} Entries
+
 								<ClayIcon symbol="caret-double-l" />
 							</ClayButton>
 						}
 					/>
 
 					<ClayPaginationBar.Results>
-						Showing ## to ## of {totalCount} entries.
+						Showing {} to {} of {totalCount} entries.
 					</ClayPaginationBar.Results>
 				</ClayPaginationBar>
 
 				<ClayPaginationWithBasicItems
-					active={active}
+
+					// activeDelta={delta}
+
+					// deltas={deltas}
+
+					activePage={active}
+
 					ellipsisBuffer={2}
-					onActiveChange={setActive}
+
+					// onDeltaChange={setDelta}
+
+					onPageChange={(page: number) => {setPage(page), setActive(page)}}
 					totalPages={totalPages}
 				/>
 			</div>
 		</div>
 	);
 };
+
 
 export default ApplicationsTable;

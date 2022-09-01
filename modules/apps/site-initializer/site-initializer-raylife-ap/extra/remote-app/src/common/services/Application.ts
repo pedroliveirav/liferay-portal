@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -20,16 +21,17 @@ type Parameters = {
 	[key: string]: string;
 };
 
-export function getApplications(parameters: Parameters = {}) {
+export function getApplications(parameters: Parameters) {
+
 	const parametersList = Object.keys(parameters);
 
 	if (parametersList.length) {
 		const parametersContainer: String[] = [];
-
+		
 		parametersList.forEach((item) => {
 			parametersContainer.push(`${item}=${parameters[item]}`);
 		});
-
+		
 		const parametersString = '?' + parametersContainer.join('&');
 
 		return axios.get(`${DeliveryAPI}/${parametersString}`);
