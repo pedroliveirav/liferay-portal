@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -33,6 +34,7 @@ import {
 	sixMonthsAgoDate,
 	threeMonthsAgoDate,
 } from '../../../common/utils/dateFormatter';
+import useWindowDimensions from '../../../hooks/useWindowDimensions';
 import {
 	BarChartPerformanceTypes,
 	Policy,
@@ -76,7 +78,9 @@ const colors: {[keys: string]: {}} = {
 	goals: '#DCF1FD',
 };
 
-const paddingValue = 100;
+// const paddingValue = 100;
+
+let widthValue = 20;
 
 const ProductPerformance = () => {
 	const [products, setProducts] = useState<ProductCell[]>([]);
@@ -96,15 +100,79 @@ const ProductPerformance = () => {
 	const [currentTooltip, setCurrentTooltip] = useState<string[]>(
 		yearToDateGoals
 	);
+	const [productValues, setProductsValues] = useState('All');
+	const windowSize = useWindowDimensions(); // alterar
 
-	let categoryLabelTooltip = '';
+	const [paddingValue, setPaddingValue] = useState(100);
+
+	// let categoryLabelTooltip = '';
+
+	const {deviceSize, width} = useWindowDimensions();
+
+	useEffect(() => {
+		console.log('deviceSize', deviceSize);
+		console.log('width', width);
+
+		if (labelRef.current) {
+			const chartContainer = document.getElementById('chart-container-1');
+
+			if (chartContainer) {
+				const styles = getComputedStyle(chartContainer);
+				const chartContainerWidth = Number(
+					styles.width.replace('px', '')
+				);
+
+				const calculatedWidth = chartContainerWidth - 10;
+
+				// const calculatedWidth = chartContainerWidth - 10;
+
+				setPaddingValue(paddingValue - 10);
+				console.log(
+					'awaw',
+					BarChartPerformancee.width,
+					chartContainerWidth,
+					calculatedWidth
+				);
+
+				labelRef.current.resize({
+					height: 440,
+					width: calculatedWidth,
+				});
+			}
+		}
+
+		console.log('ref', labelRef.current);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [width]);
+
+	useEffect(() => {}, [timePeriod]);
+
+	const tooltip = {
+		format: {
+			name(categoryLabel: string) {
+				return categoryLabel;
+			},
+			value(value: any, _id: number, index: string, x: number) {
+				if (value !== 0) {
+					if (index === 'goals') {
+						const tooltipGoals = (value = currentTooltip[x]);
+
+						return tooltipGoals;
+					} else {
+						return value;
+					}
+				}
+			},
+		},
+		grouped: false,
+		show: true,
+	};
 
 	function getExceededValues(goalValue: any, salesValue: any) {
 		const exceededValue = goalValue?.map((goal: number, index: number) => {
 			if (goal - salesValue[index] <= 0) {
 				return (goal - salesValue[index]) * -1;
-			}
-			else {
+			} else {
 				return 0;
 			}
 		});
@@ -116,8 +184,7 @@ const ProductPerformance = () => {
 		const goalsValues = goalValue?.map((goal: number, index: number) => {
 			if (goal - salesValue[index] >= 0) {
 				return goal - salesValue[index];
-			}
-			else {
+			} else {
 				return 0;
 			}
 		});
@@ -129,8 +196,7 @@ const ProductPerformance = () => {
 		const achievedValues = goalValue?.map((goal: number, index: number) => {
 			if (goal - salesValue[index] <= 0) {
 				return goal;
-			}
-			else {
+			} else {
 				return salesValue[index];
 			}
 		});
@@ -327,7 +393,6 @@ const ProductPerformance = () => {
 				});
 			}
 		);
-
 		setProducts(newProductList);
 	};
 
@@ -336,13 +401,13 @@ const ProductPerformance = () => {
 			labelRef.current.categories(getData()[0]?.label);
 		}
 	};
-
 	const settingAnnualRules = async () => {
 		const annualRuleValues = await annualRule(
 			currentDateString,
 			january,
 			yearToDateGoalsArray,
-			yearToDateSalesArray
+			yearToDateSalesArray,
+			productValues
 		);
 		setYearToDateGoals(annualRuleValues[0]);
 
@@ -358,6 +423,7 @@ const ProductPerformance = () => {
 	const settingSixMonthRule = async () => {
 		const sixMonthRuleValues = await sixMonthRule(
 			currentDateString,
+			productValues,
 			sixMonthsAgoDate,
 			sixMonthsGoalsArray,
 			sixMonthsSalesArray
@@ -377,7 +443,8 @@ const ProductPerformance = () => {
 			currentDateString,
 			threeMonthsAgoDate,
 			threeMonthsGoalsArray,
-			threeMonthsSalesArray
+			threeMonthsSalesArray,
+			productValues
 		);
 
 		setThreeMonthsGoalsData(threeMonthRuleValues[0]);
@@ -390,22 +457,110 @@ const ProductPerformance = () => {
 		}
 	};
 
+	// const tooltipRule = () => {
+	// 	const chartBox = document.querySelector(
+	// 		'.ray-dashboard-product-performance'
+	// 	);
+	// 	const tooltipContainer = chartBox?.querySelector(
+	// 		'.bb-tooltip-container'
+	// 	);
+	// 	const tooltipList = tooltipContainer?.querySelectorAll(
+	// 		'td.name'
+	// 	) as NodeList;
+
+	// 	console.log('list select', tooltipList);
+
+	// 	if (tooltipList.length > 1) {
+	// 		return tooltipContainer?.classList.add(
+	// 			'bb-tooltip-container-hidden'
+	// 		);
+	// 	}
+
+	// 	return tooltipContainer?.classList.remove(
+	// 		'bb-tooltip-container-hidden'
+	// 	);
+	// };
+
+	// const chartBox = document.querySelector(
+	// 	'.ray-dashboard-product-performance'
+	// );
+	// const chartContainer = chartBox?.querySelector('g.bb-chart');
+	// const bars = chartContainer?.querySelectorAll(
+	// 	'rect.bb-event-rect'
+	// ) as NodeList;
+
+	// bars[0].setAttribute("width", 22);
+
 	useEffect(() => {
 		productsBaseSetup();
 
 		if (timePeriod === '0') {
-			settingAnnualRules();
+			if (windowSize.width > 992) {
+				settingAnnualRules();
+
+				// paddingValue = 100;
+
+				widthValue = 15;
+			} else if (windowSize.width < 992 && windowSize.width > 767.98) {
+				settingAnnualRules();
+
+				// paddingValue = 150;
+
+				widthValue = 10;
+			} else {
+				settingAnnualRules();
+
+				// paddingValue = 250;
+
+				widthValue = 10;
+			}
 		}
 
 		if (timePeriod === '1') {
-			settingSixMonthRule();
+			if (windowSize.width > 992) {
+				settingSixMonthRule();
+
+				// paddingValue = 100;
+
+				widthValue = 20;
+			} else if (windowSize.width < 992 && windowSize.width > 767.98) {
+				settingSixMonthRule();
+
+				// paddingValue = 100;
+
+				widthValue = 20;
+			} else {
+				settingSixMonthRule();
+
+				// paddingValue = 100;
+
+				widthValue = 20;
+			}
 		}
 
 		if (timePeriod === '2') {
-			settingThreeMonthRule();
+			if (windowSize.width > 992) {
+				settingThreeMonthRule();
+
+				// paddingValue = 100;
+
+				widthValue = 30;
+			} else if (windowSize.width < 992 && windowSize.width > 767.98) {
+				settingSixMonthRule();
+
+				// paddingValue = 100;
+
+				widthValue = 20;
+			} else {
+				settingSixMonthRule();
+
+				// paddingValue = 100;
+
+				widthValue = 20;
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [lengthExceededColumn, isLoading, timePeriod]);
+	}, [lengthExceededColumn, isLoading, timePeriod, productValues]);
 
 	const handleProductFilterToggle = (
 		productExternalReferenceCode: string
@@ -418,7 +573,7 @@ const ProductPerformance = () => {
 
 			return product;
 		});
-
+		setProductsValues(productExternalReferenceCode);
 		setProducts(newProducts);
 	};
 
@@ -454,6 +609,7 @@ const ProductPerformance = () => {
 							onClick={() => {
 								if (!products.every(isFilterAllActive)) {
 									handleProductFilterToggle('All');
+									setProductsValues('All');
 								}
 							}}
 						>
@@ -490,7 +646,7 @@ const ProductPerformance = () => {
 					</ClaySelect>
 				</div>
 
-				<div className="p-5">
+				<div className="p-md-5 px-2 py-3" id="chart-container-1">
 					{isLoading && (
 						<ClayChart
 							axis={{
@@ -523,7 +679,7 @@ const ProductPerformance = () => {
 								},
 							}}
 							bar={{
-								width: 20,
+								width: widthValue,
 							}}
 							data={dataChart}
 							grid={{
@@ -548,30 +704,10 @@ const ProductPerformance = () => {
 							ref={labelRef}
 							size={{
 								height: BarChartPerformancee.height,
-								width: BarChartPerformancee.width,
-							}}
-							tooltip={{
-								format: {
-									name(categoryLabel: string) {
-										categoryLabelTooltip = categoryLabel;
 
-										return categoryLabel;
-									},
-
-									value(
-										value: number,
-										_id: number,
-										_index: number,
-										x: number
-									) {
-										return categoryLabelTooltip === 'goals'
-											? currentTooltip[x]
-											: value;
-									},
-								},
-								grouped: false,
-								show: true,
+								// width: BarChartPerformancee.width,
 							}}
+							tooltip={tooltip}
 						/>
 					)}
 				</div>
