@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -57,18 +56,24 @@ const BarChartPerformancee: BarChartPerformanceTypes = {
 	width: 600,
 };
 
+enum PERIODS {
+	YEAR = '0',
+	THREE_MONTH = '2',
+	SIX_MONTH = '1',
+}
+
 const TIME_PERIODS = [
 	{
 		label: '3 MO',
-		value: '2',
+		value: PERIODS.THREE_MONTH,
 	},
 	{
 		label: '6 MO',
-		value: '1',
+		value: PERIODS.SIX_MONTH,
 	},
 	{
 		label: 'YTD',
-		value: '0',
+		value: PERIODS.YEAR,
 	},
 ];
 
@@ -78,15 +83,13 @@ const colors: {[keys: string]: {}} = {
 	goals: '#DCF1FD',
 };
 
-// const paddingValue = 100;
-
 let widthValue = 20;
 
 const ProductPerformance = () => {
 	const [products, setProducts] = useState<ProductCell[]>([]);
-	const [timePeriod, setTimePeriod] = useState('0');
+	const [timePeriod, setTimePeriod] = useState<string>(PERIODS.YEAR);
 	const labelRef = useRef<any>();
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [threeMonthsSalesData, setThreeMonthsSalesData] = useState<string[]>(
 		[]
 	);
@@ -103,16 +106,17 @@ const ProductPerformance = () => {
 	const [productValues, setProductsValues] = useState('All');
 	const windowSize = useWindowDimensions(); // alterar
 
-	const [paddingValue, setPaddingValue] = useState(100);
+	const {width} = useWindowDimensions();
 
-	// let categoryLabelTooltip = '';
+	const chartContainer = document.getElementById('chart-container-1');
+	let chartWidth = 0;
 
-	const {deviceSize, width} = useWindowDimensions();
+	if (chartContainer) {
+		const styles = getComputedStyle(chartContainer);
+		chartWidth = Number(styles.width.replace('px', ''));
+	}
 
 	useEffect(() => {
-		console.log('deviceSize', deviceSize);
-		console.log('width', width);
-
 		if (labelRef.current) {
 			const chartContainer = document.getElementById('chart-container-1');
 
@@ -124,16 +128,6 @@ const ProductPerformance = () => {
 
 				const calculatedWidth = chartContainerWidth - 10;
 
-				// const calculatedWidth = chartContainerWidth - 10;
-
-				setPaddingValue(paddingValue - 10);
-				console.log(
-					'awaw',
-					BarChartPerformancee.width,
-					chartContainerWidth,
-					calculatedWidth
-				);
-
 				labelRef.current.resize({
 					height: 440,
 					width: calculatedWidth,
@@ -141,7 +135,6 @@ const ProductPerformance = () => {
 			}
 		}
 
-		console.log('ref', labelRef.current);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [width]);
 
@@ -260,7 +253,7 @@ const ProductPerformance = () => {
 				...getGoalsValues(threeMonthsGoalsData, threeMonthsSalesData),
 			],
 			label: threeMonthsLabel,
-			period: 2,
+			period: Number(PERIODS.THREE_MONTH),
 			periodDate: 'Period',
 		},
 		{
@@ -278,7 +271,7 @@ const ProductPerformance = () => {
 				...getGoalsValues(sixMonthsGoalsData, sixMonthsSalesData),
 			],
 			label: sixMonthsLabel,
-			period: 1,
+			period: Number(PERIODS.SIX_MONTH),
 			periodDate: 'Period',
 		},
 		{
@@ -296,7 +289,7 @@ const ProductPerformance = () => {
 				...getGoalsValues(yearToDateGoals, yearToDateSales),
 			],
 			label: yearToDateLabel,
-			period: 0,
+			period: Number(PERIODS.YEAR),
 			periodDate: 'Period',
 		},
 	];
@@ -428,6 +421,7 @@ const ProductPerformance = () => {
 			sixMonthsGoalsArray,
 			sixMonthsSalesArray
 		);
+
 		setSixMonthsGoalsData(sixMonthRuleValues[0]);
 		setSixMonthsSalesData(sixMonthRuleValues[1]);
 
@@ -457,105 +451,44 @@ const ProductPerformance = () => {
 		}
 	};
 
-	// const tooltipRule = () => {
-	// 	const chartBox = document.querySelector(
-	// 		'.ray-dashboard-product-performance'
-	// 	);
-	// 	const tooltipContainer = chartBox?.querySelector(
-	// 		'.bb-tooltip-container'
-	// 	);
-	// 	const tooltipList = tooltipContainer?.querySelectorAll(
-	// 		'td.name'
-	// 	) as NodeList;
-
-	// 	console.log('list select', tooltipList);
-
-	// 	if (tooltipList.length > 1) {
-	// 		return tooltipContainer?.classList.add(
-	// 			'bb-tooltip-container-hidden'
-	// 		);
-	// 	}
-
-	// 	return tooltipContainer?.classList.remove(
-	// 		'bb-tooltip-container-hidden'
-	// 	);
-	// };
-
-	// const chartBox = document.querySelector(
-	// 	'.ray-dashboard-product-performance'
-	// );
-	// const chartContainer = chartBox?.querySelector('g.bb-chart');
-	// const bars = chartContainer?.querySelectorAll(
-	// 	'rect.bb-event-rect'
-	// ) as NodeList;
-
-	// bars[0].setAttribute("width", 22);
-
 	useEffect(() => {
 		productsBaseSetup();
 
-		if (timePeriod === '0') {
+		if (timePeriod === PERIODS.YEAR) {
 			if (windowSize.width > 992) {
 				settingAnnualRules();
-
-				// paddingValue = 100;
-
 				widthValue = 15;
 			} else if (windowSize.width < 992 && windowSize.width > 767.98) {
 				settingAnnualRules();
-
-				// paddingValue = 150;
-
 				widthValue = 10;
 			} else {
 				settingAnnualRules();
-
-				// paddingValue = 250;
-
 				widthValue = 10;
 			}
 		}
 
-		if (timePeriod === '1') {
+		if (timePeriod === PERIODS.SIX_MONTH) {
 			if (windowSize.width > 992) {
 				settingSixMonthRule();
-
-				// paddingValue = 100;
-
 				widthValue = 20;
 			} else if (windowSize.width < 992 && windowSize.width > 767.98) {
 				settingSixMonthRule();
-
-				// paddingValue = 100;
-
 				widthValue = 20;
 			} else {
 				settingSixMonthRule();
-
-				// paddingValue = 100;
-
 				widthValue = 20;
 			}
 		}
 
-		if (timePeriod === '2') {
+		if (timePeriod === PERIODS.THREE_MONTH) {
 			if (windowSize.width > 992) {
 				settingThreeMonthRule();
-
-				// paddingValue = 100;
-
 				widthValue = 30;
 			} else if (windowSize.width < 992 && windowSize.width > 767.98) {
-				settingSixMonthRule();
-
-				// paddingValue = 100;
-
+				settingThreeMonthRule();
 				widthValue = 20;
 			} else {
-				settingSixMonthRule();
-
-				// paddingValue = 100;
-
+				settingThreeMonthRule();
 				widthValue = 20;
 			}
 		}
@@ -578,7 +511,6 @@ const ProductPerformance = () => {
 	};
 
 	const isFilterAllActive = (product: ProductCell) => !product.active;
-
 	const findActiveProduct = products.find((product) => product.active)
 		?.productName;
 
@@ -699,13 +631,12 @@ const ProductPerformance = () => {
 								show: true,
 							}}
 							padding={{
-								right: paddingValue,
+								right: 55,
 							}}
 							ref={labelRef}
 							size={{
 								height: BarChartPerformancee.height,
-
-								// width: BarChartPerformancee.width,
+								width: chartWidth,
 							}}
 							tooltip={tooltip}
 						/>
