@@ -48,6 +48,7 @@ const NavSegment = ({
 			>
 				<Nav.Link
 					active={index === currentIndex}
+					aria-label={`Switch to ${item.label}`}
 					className="cp-nav-link text-neutral-10"
 					disabled={disabled}
 				>

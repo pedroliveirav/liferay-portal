@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import {Button} from '..';
 import classNames from 'classnames';
 import {useState} from 'react';
-import {Button} from '..';
 
 const RoundedGroupButtons = ({groupButtons, handleOnChange, id, ...props}) => {
 	const [selectedButton, setSelectedButton] = useState(
@@ -20,6 +20,7 @@ const RoundedGroupButtons = ({groupButtons, handleOnChange, id, ...props}) => {
 		>
 			{groupButtons?.map(({label, value}, index) => (
 				<Button
+					aria-label={`Select ${value} keys`}
 					className={classNames('btn px-4 py-1 rounded-pill', {
 						'bg-transparent text-neutral-4':
 							selectedButton !== value,
