@@ -18,8 +18,8 @@ import {getFormattedDate} from '~/routes/customer-portal/utils/getFormattedDate'
 import useMyUserAccountByAccountExternalReferenceCode from '../TeamMembers/components/TeamMembersTable/hooks/useMyUserAccountByAccountExternalReferenceCode';
 import BETable from './components/BETable';
 import {IRow} from './components/BETable/BETable';
-import TableHeader from './components/BETableHeader';
-import {getFormattedTime} from './utils/getFormattedTime';
+import {getFormattedTime} from '../../../../../common/utils/getFormattedTime';
+import BEActionsHeader from './components/BEActionsHeader';
 
 interface IBusinessEventTicket {
 	associatedTickets: string;
@@ -234,8 +234,8 @@ const BusinessEvents = () => {
 				</h6>
 			</div>
 
-			<div>
-				<TableHeader
+			<div className='mb-1'>
+				<BEActionsHeader
 					hasAllEventsPermissions={hasAllEventsPermissions}
 				/>
 			</div>

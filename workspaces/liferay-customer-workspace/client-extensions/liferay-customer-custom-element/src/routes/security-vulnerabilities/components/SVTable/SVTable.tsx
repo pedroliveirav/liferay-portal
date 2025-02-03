@@ -3,12 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import ClayTable from '@clayui/table';
 import {useNavigate} from 'react-router-dom';
 
 import './SVTable.css';
-
-import React from 'react';
+import DataTable from '~/common/components/DataTable';
 
 export interface IColumn {
 	columnKey: string;
@@ -28,42 +26,19 @@ interface IProps {
 const SVTable = ({columns, rows}: IProps) => {
 	const navigate = useNavigate();
 
-	return (
-		<ClayTable
-			borderless
-			className="sv-structured-data sv-table table"
-			noWrap
-			striped={false}
-		>
-			<ClayTable.Head align="left">
-				<ClayTable.Row>
-					{columns.map((column) => (
-						<ClayTable.Cell
-							className="font-weight-semi-bold text-neutral-10"
-							key={column.columnKey}
-						>
-							{column.label}
-						</ClayTable.Cell>
-					))}
-				</ClayTable.Row>
-			</ClayTable.Head>
+	const handleRowClick = (row: IRow) => {
+		if (row.link) {
+			navigate(row.link);
+		}
+	};
 
-			<ClayTable.Body align="left">
-				{rows.map((row, index) => (
-					<ClayTable.Row
-						className="sv-row"
-						key={index}
-						onClick={() => row.link && navigate(row.link)}
-					>
-						{columns.map((column) => (
-							<ClayTable.Cell key={column.columnKey}>
-								{row[column.columnKey]}
-							</ClayTable.Cell>
-						))}
-					</ClayTable.Row>
-				))}
-			</ClayTable.Body>
-		</ClayTable>
+	return (
+		<DataTable
+			columns={columns}
+			rows={rows}
+			className="sv"
+			onRowClick={handleRowClick}
+		/>
 	);
 };
 

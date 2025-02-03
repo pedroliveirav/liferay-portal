@@ -5,7 +5,7 @@
 
 import Button from '@clayui/button';
 
-import './BETableHeader.css';
+import './BEActionsHeader.css';
 
 import i18n from '~/common/I18n';
 
@@ -16,7 +16,7 @@ interface IPropsHeader {
 	hasAllEventsPermissions: Boolean;
 }
 
-const BETableHeader = ({hasAllEventsPermissions}: IPropsHeader) => {
+const BEActionsHeader = ({hasAllEventsPermissions}: IPropsHeader) => {
 	return (
 		<div className="d-flex flex-column mt-4">
 			<div className="be-table-header d-flex justify-content-between p-3">
@@ -36,4 +36,4 @@ const BETableHeader = ({hasAllEventsPermissions}: IPropsHeader) => {
 	);
 };
 
-export default BETableHeader;
+export default BEActionsHeader;

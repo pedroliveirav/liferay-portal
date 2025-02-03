@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import ClayTable from '@clayui/table';
-
 import './BETable.css';
+import DataTable from '~/common/components/DataTable';
 
 export interface IColumn {
 	columnKey: string;
@@ -25,45 +24,11 @@ interface IProps {
 
 const BETable = ({columns, rows}: IProps) => {
 	return (
-		<ClayTable
-			borderless
-			className="be-structured-data be-table mt-1 table"
-			noWrap
-			striped={false}
-		>
-			<ClayTable.Head align="left">
-				<ClayTable.Row>
-					{columns.map((column) => (
-						<ClayTable.Cell
-							className="font-weight-semi-bold text-neutral-10"
-							key={column.columnKey}
-						>
-							<div>
-								<div className="be-header-label">
-									{column.label}
-								</div>
-
-								<div className="be-header-sub-label color-neutral-7">
-									{column.subLabel}
-								</div>
-							</div>
-						</ClayTable.Cell>
-					))}
-				</ClayTable.Row>
-			</ClayTable.Head>
-
-			<ClayTable.Body align="left">
-				{rows.map((row, index) => (
-					<ClayTable.Row className="be-row" key={index}>
-						{columns.map((column) => (
-							<ClayTable.Cell key={column.columnKey}>
-								{row[column.columnKey]}
-							</ClayTable.Cell>
-						))}
-					</ClayTable.Row>
-				))}
-			</ClayTable.Body>
-		</ClayTable>
+		<DataTable
+			columns={columns}
+			rows={rows}
+			className="be"
+		/>
 	);
 };
 
