@@ -200,6 +200,43 @@ print(json.dumps(patch))
 	fi
 }
 
+# The virtual order item that backs an application's Download tab is generated
+# only once the order's payment reaches a settled status (COMPLETED or
+# NOT_REQUIRED), which fires the CommercePaymentStatusMessageListener. The order
+# is created already at the Approved order status, so the generated virtual order
+# item activates immediately because its activation status matches. This is a
+# separate PATCH from _set_order_fields on purpose: a payment transition the
+# order engine rejects must never block the projectName and purchase number from
+# being applied. A failure here is non-fatal and only affects the download mock.
+
+function _complete_payment {
+	local file="${1}"
+	local order_id="${2}"
+
+	local payment_status
+
+	payment_status=$(_read_field "paymentStatus" < "${file}")
+
+	[[ -z ${payment_status} ]] && return 0
+
+	local status
+
+	status=$(_curl \
+		--data "{\"paymentStatus\": ${payment_status}}" \
+		--header "Content-Type: application/json" \
+		--output /dev/null \
+		--request PATCH \
+		--write-out "%{http_code}" \
+		"${LIFERAY_URL}/o/headless-commerce-admin-order/v1.0/orders/${order_id}" || true)
+
+	if [[ ${status} == 2* ]]
+	then
+		echo "Completed payment for order ${order_id}."
+	else
+		echo "Unable to complete payment for order ${order_id}." >&2
+	fi
+}
+
 function _populate_order {
 	local file="${1}"
 	local channel_id="${2}"
@@ -266,6 +303,7 @@ function _populate_order {
 
 	_set_order_fields "${file}" "${order_id}"
 	_upsert_entitlements "${file}"
+	_complete_payment "${file}" "${order_id}"
 	_link_license_keys "${file}"
 }
 

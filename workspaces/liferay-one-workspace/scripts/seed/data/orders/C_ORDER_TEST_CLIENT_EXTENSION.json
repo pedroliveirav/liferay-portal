@@ -5,15 +5,15 @@
 	"entitlements": [
 		{
 			"endDate": "2027-08-09T00:00:00Z",
-			"externalReferenceCode": "C_ENT_APP",
+			"externalReferenceCode": "C_ENT_TEST_CLIENT_EXTENSION",
 			"grantType": "fixed",
 			"maxQuantity": 1,
-			"name": "Test Application",
+			"name": "Test Client Extension",
 			"quantity": 1,
 			"r_accountEntryToEntitlement_accountEntryERC": "ACCNT-006",
-			"r_commerceOrderItemToEntitlement_commerceOrderItemERC": "C_ORDER_ITEM_APP",
+			"r_commerceOrderItemToEntitlement_commerceOrderItemERC": "C_ORDER_ITEM_TEST_CLIENT_EXTENSION",
 			"r_contractToEntitlement_c_contractERC": "C_CONTRACT_DXP",
-			"r_entitlementDefinitionToEntitlement_c_entitlementDefinitionERC": "C_ENT_DEF_APP",
+			"r_entitlementDefinitionToEntitlement_c_entitlementDefinitionERC": "C_ENT_DEF_TEST_CLIENT_EXTENSION",
 			"startDate": "2026-08-09T00:00:00Z"
 		}
 	],
@@ -22,19 +22,19 @@
 		"channelExternalReferenceCode": "LIFERAY_ONE_CHANNEL",
 		"contractExternalReferenceCode": "C_CONTRACT_DXP",
 		"currencyCode": "USD",
-		"externalReferenceCode": "C_ORDER_APP_DEMO",
+		"externalReferenceCode": "C_ORDER_TEST_CLIENT_EXTENSION",
 		"orderItems": [
 			{
-				"externalReferenceCode": "C_ORDER_ITEM_APP",
-				"name": "Test Application",
+				"externalReferenceCode": "C_ORDER_ITEM_TEST_CLIENT_EXTENSION",
+				"name": "Test Client Extension",
 				"quantity": 1,
-				"skuExternalReferenceCode": "PRDCT-APP",
+				"skuExternalReferenceCode": "PRDCT-TEST-CLIENT-EXTENSION",
 				"unitPrice": 0
 			}
 		],
 		"orderStatus": 0,
-		"orderTypeExternalReferenceCode": "DXP_APP"
+		"orderTypeExternalReferenceCode": "CLIENT_EXTENSION"
 	},
 	"paymentStatus": 23,
-	"purchaseOrderNumber": "PO-APP-DEMO"
+	"purchaseOrderNumber": "PO-TEST-CLIENT-EXTENSION"
 }
